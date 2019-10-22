@@ -61,7 +61,8 @@ public class LoginFragment extends Fragment {
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setAvailableProviders(providers)
-//                            .setLogo(R.drawable.ic_people_login_24dp)
+                            .setTheme(R.style.LoginTheme)
+                            .setLogo(R.mipmap.ic_launcher)
                             .setIsSmartLockEnabled(false, true)
 //                            .setTosAndPrivacyPolicyUrls("http://www.google.com", "http://www.google.com")
                             .build(),
