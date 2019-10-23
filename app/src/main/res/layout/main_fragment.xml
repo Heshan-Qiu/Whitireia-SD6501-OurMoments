@@ -61,9 +61,28 @@
             android:id="@+id/buttonChoose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="false"
-            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
             android:text="@string/choose_images" />
+
+        <Button
+            android:id="@+id/buttonMerge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/buttonShare"
+            android:layout_toEndOf="@+id/buttonChoose"
+            android:enabled="false"
+            android:text="@string/merge_images" />
+
+        <Button
+            android:id="@+id/buttonShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:enabled="false"
+            android:text="@string/share_image" />
+
     </RelativeLayout>
 
 </LinearLayout>

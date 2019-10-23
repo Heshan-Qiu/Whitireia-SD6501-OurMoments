@@ -40,6 +40,7 @@ import java.util.Objects;
 
 import ac.whitireia.ourmoments.R;
 import ac.whitireia.ourmoments.ui.image.ImageFragment;
+import ac.whitireia.ourmoments.ui.merge.MergeFragment;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -161,6 +162,8 @@ public class MainFragment extends Fragment implements View.OnClickListener {
             Glide.with(view).load(R.drawable.sample2).override(imageWidth, imageHeight).fitCenter().into(imageView2);
             Glide.with(view).load(R.drawable.sample3).override(imageWidth, imageHeight).fitCenter().into(imageView3);
         }
+
+        view.findViewById(R.id.buttonMerge).setEnabled(false);
     }
 
     @Override
@@ -170,8 +173,13 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         calculateImageDimensions();
         initializeImages();
 
-        Button selectChoose = view.findViewById(R.id.buttonChoose);
-        selectChoose.setOnClickListener(new View.OnClickListener() {
+        initializeButtonChoose(view);
+        initializeButtonMerge(view);
+    }
+
+    private void initializeButtonChoose(View view) {
+        Button buttonChoose = view.findViewById(R.id.buttonChoose);
+        buttonChoose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PopupMenu popupMenu = new PopupMenu(requireActivity(), view);
@@ -197,6 +205,19 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                     }
                 });
                 popupMenu.show();
+            }
+        });
+    }
+
+    private void initializeButtonMerge(View view) {
+        Button buttonMerge = view.findViewById(R.id.buttonMerge);
+        buttonMerge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, MergeFragment.newInstance(image1Path, image2Path))
+                        .addToBackStack(MainFragment.class.getName())
+                        .commit();
             }
         });
     }
@@ -236,10 +257,10 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         IdpResponse response = IdpResponse.fromResultIntent(data);
         if (resultCode == RESULT_OK) {
             if (requestCode == RC_CAMERA) {
-                Toast.makeText(getContext(), "Capture image successfully.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Capture image successfully.", Toast.LENGTH_SHORT).show();
                 handleImageResult(cameraFile.getAbsolutePath());
             } else if (requestCode == RC_ALBUM) {
-                Toast.makeText(getContext(), "Choose image successfully.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Choose image successfully.", Toast.LENGTH_SHORT).show();
                 Uri uri = data.getData();
                 try {
                     handleImageResult(getUriPath(uri));
@@ -283,6 +304,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 image2Setted = true;
                 image1Setted = false;
                 mergeEnable = true;
+                view.findViewById(R.id.buttonMerge).setEnabled(true);
             }
         }
         if (imageView != null)

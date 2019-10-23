@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_transform"
+        android:icon="@drawable/ic_transform_black_24dp"
+        android:title="@string/transform"
+        app:showAsAction="always"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/menu_swap"
+        android:icon="@drawable/ic_swap_horiz_black_24dp"
+        android:title="@string/swap"
+        app:showAsAction="always"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/menu_save"
+        android:icon="@drawable/ic_check_black_24dp"
+        android:title="@string/save"
+        app:showAsAction="always"
+        android:visible="false" />
 
     <item
         android:id="@+id/menu_profile"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:title="@string/menu_profile" />
+        android:title="@string/menu_profile"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_logout"
         android:icon="@drawable/ic_exit_to_app_black_24dp"
-        android:title="@string/menu_logout" />
+        android:title="@string/menu_logout"
+        app:showAsAction="never" />
 
 </menu>
