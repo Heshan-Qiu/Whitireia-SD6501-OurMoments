@@ -1,15 +1,11 @@
 package ac.whitireia.ourmoments.ui.main;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
-import androidx.lifecycle.ViewModelProviders;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,7 +16,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +28,11 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.IdpResponse;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -48,6 +47,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     private static final String LOG_TAG = MainFragment.class.getName();
     private static final int RC_CAMERA = 1002;
+    private static final int RC_ALBUM = 1003;
 
     private File cameraFile;
     private int imageWidth;
@@ -185,7 +185,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                                 startCameraActivity();
                                 break;
                             case R.id.menu_album:
-                                Toast.makeText(getContext(), "Album", Toast.LENGTH_SHORT).show();
+                                startAlbumActivity();
                                 break;
                             case R.id.menu_clear:
                                 clearAllImages();
@@ -199,6 +199,13 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 popupMenu.show();
             }
         });
+    }
+
+    private void startAlbumActivity() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, RC_ALBUM);
     }
 
     private void startCameraActivity() {
@@ -226,36 +233,59 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_CAMERA) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(getContext(), "Capture image success.", Toast.LENGTH_LONG).show();
-
-                ImageView imageView = null;
-                View view = getView();
-
-                if (view != null) {
-                    if (!image1Setted) {
-                        imageView = view.findViewById(R.id.imageView1);
-                        image1Path = cameraFile.getAbsolutePath();
-                        image1Setted = true;
-                        image2Setted = false;
-                    } else if (!image2Setted) {
-                        imageView = view.findViewById(R.id.imageView2);
-                        image2Path = cameraFile.getAbsolutePath();
-                        image2Setted = true;
-                        image1Setted = false;
-                        mergeEnable = true;
-                    }
+        IdpResponse response = IdpResponse.fromResultIntent(data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == RC_CAMERA) {
+                Toast.makeText(getContext(), "Capture image successfully.", Toast.LENGTH_LONG).show();
+                handleImageResult(cameraFile.getAbsolutePath());
+            } else if (requestCode == RC_ALBUM) {
+                Toast.makeText(getContext(), "Choose image successfully.", Toast.LENGTH_LONG).show();
+                Uri uri = data.getData();
+                try {
+                    handleImageResult(getUriPath(uri));
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Handle image error.", e);
                 }
-                if (imageView != null)
-                    Glide.with(getView()).load(cameraFile).override(imageWidth, imageHeight).fitCenter().into(imageView);
-            } else {
-                if (response != null)
-                    Log.e(LOG_TAG, "Capture image error", response.getError());
             }
-        }
+        } else if (response != null)
+            Log.e(LOG_TAG, "Capture image error", response.getError());
     }
 
+    private String getUriPath(Uri uri) throws IOException {
+        InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+        File file = createImageFile();
+        OutputStream outputStream = new FileOutputStream(file);
+        byte[] buffer = new byte[1024];
+        int length;
+
+        while ((length = inputStream.read(buffer)) > 0)
+            outputStream.write(buffer, 0, length);
+
+        outputStream.close();
+        inputStream.close();
+
+        return file.getAbsolutePath();
+    }
+
+    private void handleImageResult(String path) {
+        ImageView imageView = null;
+        View view = getView();
+
+        if (view != null) {
+            if (!image1Setted) {
+                imageView = view.findViewById(R.id.imageView1);
+                image1Path = path;
+                image1Setted = true;
+                image2Setted = false;
+            } else if (!image2Setted) {
+                imageView = view.findViewById(R.id.imageView2);
+                image2Path = path;
+                image2Setted = true;
+                image1Setted = false;
+                mergeEnable = true;
+            }
+        }
+        if (imageView != null)
+            Glide.with(getView()).load(path).override(imageWidth, imageHeight).fitCenter().into(imageView);
+    }
 }

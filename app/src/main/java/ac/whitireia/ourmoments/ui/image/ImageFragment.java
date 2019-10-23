@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import ac.whitireia.ourmoments.MainActivity;
 import ac.whitireia.ourmoments.R;
 
 public class ImageFragment extends Fragment {
@@ -31,7 +32,7 @@ public class ImageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        ((MainActivity) requireActivity()).showBackArrow();
         return inflater.inflate(R.layout.image_fragment, container, false);
     }
 
@@ -43,5 +44,11 @@ public class ImageFragment extends Fragment {
         if (args != null) {
             Glide.with(view).load(args.getString(FILE_PATH)).fitCenter().into((ImageView) view.findViewById(R.id.imageView));
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ((MainActivity) requireActivity()).hideBackArrow();
     }
 }

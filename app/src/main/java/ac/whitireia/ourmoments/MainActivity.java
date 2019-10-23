@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, LoginFragment.newInstance())
@@ -42,22 +43,37 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_profile:
                 break;
             case R.id.menu_logout:
-                AuthUI.getInstance()
-                        .signOut(this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            public void onComplete(@NonNull Task<Void> task) {
-                                // user is now signed out
-                                getSupportFragmentManager().beginTransaction()
-                                        .replace(R.id.container, LoginFragment.newInstance())
-                                        .commit();
-                            }
-                        });
+                logout();
+                break;
+            case android.R.id.home:
+                onBackPressed();
                 break;
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // user is now signed out
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, LoginFragment.newInstance())
+                                .commit();
+                    }
+                });
+    }
+
+    public void showBackArrow() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void hideBackArrow() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
 }
