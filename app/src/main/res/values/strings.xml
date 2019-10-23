@@ -2,8 +2,17 @@
     <string name="app_name">Our Moments</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="menu_profile">Profile</string>
     <string name="menu_logout">Logout</string>
     <string name="main_fragment">Main Fragment</string>
+    <string name="plus">+</string>
+    <string name="equal">=</string>
+    <string name="first_image">First Image</string>
+    <string name="second_image">Second Image</string>
+    <string name="merged_image">Merged Image</string>
+    <string name="choose_images">Choose Images</string>
+    <string name="clear_all_images">Clear All Images</string>
+    <string name="big_image">Big Image</string>
+    <string name="take_a_picture">Take A Picture</string>
+    <string name="choose_from_album">Choose From Album</string>
 </resources>

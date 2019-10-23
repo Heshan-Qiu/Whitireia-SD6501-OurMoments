@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "ac.whitireia.ourmoments"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -32,6 +32,11 @@ dependencies {
     // Add the Firebase Authentication and UI
     implementation 'com.google.firebase:firebase-auth:19.1.0'
     implementation 'com.firebaseui:firebase-ui-auth:6.0.2'
+
+    // Add Glide framework
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'com.google.android.gms:play-services-plus:17.0.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

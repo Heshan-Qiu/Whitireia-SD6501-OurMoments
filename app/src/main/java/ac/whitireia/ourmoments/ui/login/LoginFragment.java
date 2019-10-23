@@ -27,8 +27,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class LoginFragment extends Fragment {
 
-    private static final int RC_LOGIN = 1001;
     private static final String LOG_TAG = LoginFragment.class.getName();
+    private static final int RC_LOGIN = 1001;
 
     private FirebaseAuth mAuth;
 
