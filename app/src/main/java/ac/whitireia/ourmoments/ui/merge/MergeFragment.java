@@ -14,12 +14,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import ac.whitireia.ourmoments.MainActivity;
 import ac.whitireia.ourmoments.R;
 
 public class MergeFragment extends Fragment {
@@ -31,6 +35,9 @@ public class MergeFragment extends Fragment {
     private String image2Path;
 
     private Bitmap mergedBitmap;
+
+    private boolean horizontal;
+    private boolean vertical;
 
     public static MergeFragment newInstance(String image1, String image2) {
         MergeFragment fragment = new MergeFragment();
@@ -48,12 +55,93 @@ public class MergeFragment extends Fragment {
             image1Path = getArguments().getString(IMAGE1);
             image2Path = getArguments().getString(IMAGE2);
         }
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        menu.findItem(R.id.menu_transform).setVisible(true);
+        menu.findItem(R.id.menu_swap).setVisible(true);
+        menu.findItem(R.id.menu_save).setVisible(true);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.menu_swap);
+        if (horizontal)
+            item.setIcon(R.drawable.ic_swap_horiz_black_24dp);
+        else if (vertical)
+            item.setIcon(R.drawable.ic_swap_vert_black_24dp);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_transform:
+                handleMenuTransform();
+                break;
+            case R.id.menu_swap:
+                handleMenuSwap();
+                break;
+            case R.id.menu_save:
+                break;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    private void handleMenuSwap() {
+        View view = getView();
+
+        String tempPath = image1Path;
+        image1Path = image2Path;
+        image2Path = tempPath;
+
+        if (horizontal) {
+            mergedBitmap = createHorizontalMergedImage(image1Path, image2Path);
+            Glide.with(view)
+                    .load(mergedBitmap)
+                    .fitCenter()
+                    .into((ImageView) view.findViewById(R.id.ivMerge));
+        } else if (vertical) {
+            mergedBitmap = createVerticalMergedImage(image1Path, image2Path);
+            Glide.with(view)
+                    .load(mergedBitmap)
+                    .fitCenter()
+                    .into((ImageView) view.findViewById(R.id.ivMerge));
+        }
+    }
+
+    private void handleMenuTransform() {
+        View view = getView();
+
+        if (horizontal) {
+            mergedBitmap = createVerticalMergedImage(image1Path, image2Path);
+            Glide.with(view)
+                    .load(mergedBitmap)
+                    .fitCenter()
+                    .into((ImageView) view.findViewById(R.id.ivMerge));
+        } else if (vertical) {
+            mergedBitmap = createHorizontalMergedImage(image1Path, image2Path);
+            Glide.with(view)
+                    .load(mergedBitmap)
+                    .fitCenter()
+                    .into((ImageView) view.findViewById(R.id.ivMerge));
+        }
+
+        requireActivity().invalidateOptionsMenu();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        ((MainActivity) requireActivity()).showBackArrow();
         return inflater.inflate(R.layout.merge_fragment, container, false);
     }
 
@@ -80,6 +168,9 @@ public class MergeFragment extends Fragment {
         canvas.drawBitmap(image1, 0, 0, null);
         canvas.drawBitmap(image2, image1.getWidth(), 0, null);
 
+        horizontal = true;
+        vertical = false;
+
         return mergedImage;
     }
 
@@ -95,6 +186,15 @@ public class MergeFragment extends Fragment {
         canvas.drawBitmap(image1, 0, 0, null);
         canvas.drawBitmap(image2, 0, image1.getHeight(), null);
 
+        vertical = true;
+        horizontal = false;
+
         return mergedImage;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ((MainActivity) requireActivity()).hideBackArrow();
     }
 }

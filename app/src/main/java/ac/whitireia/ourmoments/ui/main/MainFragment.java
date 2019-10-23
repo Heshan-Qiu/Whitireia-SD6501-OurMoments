@@ -220,6 +220,8 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                         .commit();
             }
         });
+        if (mergeEnable)
+            buttonMerge.setEnabled(true);
     }
 
     private void startAlbumActivity() {

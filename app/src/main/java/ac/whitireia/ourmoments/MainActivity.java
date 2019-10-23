@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
 
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     private void logout() {
