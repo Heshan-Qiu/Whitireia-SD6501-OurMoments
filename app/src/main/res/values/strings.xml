@@ -28,4 +28,11 @@
     <string name="logout_message">Are you sure to logout?</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
+    <string name="settings">Settings</string>
+    <string name="about">About Our Moments</string>
+    <string name="application_icon">Application Icon</string>
+    <string name="version">Our Moments 1.0</string>
+    <string name="author">Heshan Qiu</string>
+    <string name="institute">Whitireia Community Polytechnic</string>
+    <string name="copyright">Copyright © 2019 heshan.chiu@gmail.com\nAll Rights Reserved</string>
 </resources>

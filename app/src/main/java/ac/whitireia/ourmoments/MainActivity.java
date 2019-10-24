@@ -3,6 +3,7 @@ package ac.whitireia.ourmoments;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import ac.whitireia.ourmoments.ui.about.AboutFragment;
 import ac.whitireia.ourmoments.ui.login.LoginFragment;
 import ac.whitireia.ourmoments.ui.main.MainFragment;
 
@@ -46,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_profile:
+            case R.id.menu_settings:
+                break;
+            case R.id.menu_about:
+                showAboutDialog();
                 break;
             case R.id.menu_logout:
                 logout();
@@ -59,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    private void showAboutDialog() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("about");
+        if (prev != null)
+            transaction.remove(prev);
+        transaction.addToBackStack(null);
+
+        AboutFragment fragment = AboutFragment.newInstance();
+        fragment.show(transaction, "dialog");
     }
 
     private void logout() {
