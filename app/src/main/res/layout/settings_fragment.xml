@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.setting.SettingsFragment">
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/etName"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Name"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="32dp"
+        android:layout_toEndOf="@id/tvName"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/tvWatermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvName"
+        android:layout_alignBaseline="@id/switchWatermark"
+        android:layout_alignLeft="@id/tvName"
+        android:text="Watermark"
+        android:textSize="18sp" />
+
+    <Switch
+        android:id="@+id/switchWatermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etName"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@id/tvWatermark" />
+
+    <TextView
+        android:id="@+id/tvNotifaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvWatermark"
+        android:layout_alignBaseline="@id/switchNotification"
+        android:layout_alignLeft="@id/tvName"
+        android:text="Notification"
+        android:textSize="18sp" />
+
+    <Switch
+        android:id="@+id/switchNotification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchWatermark"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@id/tvNotifaction"
+        android:checked="true" />
+
+    <Button
+        android:id="@+id/buttonOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchNotification"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="32dp"
+        android:text="@android:string/ok" />
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchNotification"
+        android:layout_alignBaseline="@id/buttonOK"
+        android:layout_marginRight="20dp"
+        android:layout_toLeftOf="@id/buttonOK"
+        android:text="@android:string/cancel" />
+
+</RelativeLayout>

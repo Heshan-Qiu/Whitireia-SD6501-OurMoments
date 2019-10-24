@@ -1,5 +1,7 @@
 package ac.whitireia.ourmoments.ui.main;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
 
 import android.content.Intent;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.channels.Channel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

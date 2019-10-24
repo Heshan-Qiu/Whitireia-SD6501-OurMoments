@@ -35,4 +35,8 @@
     <string name="author">Heshan Qiu</string>
     <string name="institute">Whitireia Community Polytechnic</string>
     <string name="copyright">Copyright © 2019 heshan.chiu@gmail.com\nAll Rights Reserved</string>
+    <string name="moments">Moments</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="author_email">heshan.qiu@gmail.com</string>
 </resources>

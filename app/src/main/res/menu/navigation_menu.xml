@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_moments"
+        android:icon="@drawable/ic_photo_album_black_24dp"
+        android:title="@string/moments" />
+
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/settings" />
+
+</menu>

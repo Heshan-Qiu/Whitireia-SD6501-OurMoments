@@ -1,6 +1,7 @@
 package ac.whitireia.ourmoments.ui.merge;
 
 import android.app.ActionBar;
+import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -22,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -112,20 +116,21 @@ public class MergeFragment extends Fragment {
         MainFragment fragment = (MainFragment) manager.findFragmentByTag(MainFragment.class.getName());
         fragment.setMergeComplete(true);
         try {
-            fragment.setMergePath(convertBitmapToFile(mergedBitmap).getAbsolutePath());
+            fragment.setMergePath(Utils.convertBitmapToFile(mergedBitmap, requireContext()).getAbsolutePath());
         } catch (IOException e) {
             Log.e(LOG_TAG, "Convert bitmap to jpeg file error: ", e);
         }
         manager.popBackStack();
-    }
 
-    private File convertBitmapToFile(@NonNull Bitmap bitmap) throws IOException {
-        File file = Utils.createImageFile(requireContext());
-        FileOutputStream outputStream = new FileOutputStream(file);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-        outputStream.flush();
-        outputStream.close();
-        return file;
+        if (Utils.isNotificationEnable(requireActivity())) {
+            Notification notification = new NotificationCompat.Builder(requireContext(), "OurMomentsChannel")
+                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setContentTitle("OurMoments")
+                    .setContentText("Our moments merged successfully.")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .build();
+            NotificationManagerCompat.from(requireContext()).notify(1, notification);
+        }
     }
 
     private void handleMenuSwap() {
@@ -136,13 +141,15 @@ public class MergeFragment extends Fragment {
         image2Path = tempPath;
 
         if (horizontal) {
-            mergedBitmap = createHorizontalMergedImage(image1Path, image2Path);
+            mergedBitmap = Utils.createHorizontalMergedImage(image1Path, image2Path);
+            setHorizontalFlags();
             Glide.with(view)
                     .load(mergedBitmap)
                     .fitCenter()
                     .into((ImageView) view.findViewById(R.id.ivMerge));
         } else if (vertical) {
-            mergedBitmap = createVerticalMergedImage(image1Path, image2Path);
+            mergedBitmap = Utils.createVerticalMergedImage(image1Path, image2Path);
+            setVerticalFlags();
             Glide.with(view)
                     .load(mergedBitmap)
                     .fitCenter()
@@ -154,13 +161,15 @@ public class MergeFragment extends Fragment {
         View view = getView();
 
         if (horizontal) {
-            mergedBitmap = createVerticalMergedImage(image1Path, image2Path);
+            mergedBitmap = Utils.createVerticalMergedImage(image1Path, image2Path);
+            setVerticalFlags();
             Glide.with(view)
                     .load(mergedBitmap)
                     .fitCenter()
                     .into((ImageView) view.findViewById(R.id.ivMerge));
         } else if (vertical) {
-            mergedBitmap = createHorizontalMergedImage(image1Path, image2Path);
+            mergedBitmap = Utils.createHorizontalMergedImage(image1Path, image2Path);
+            setHorizontalFlags();
             Glide.with(view)
                     .load(mergedBitmap)
                     .fitCenter()
@@ -181,47 +190,22 @@ public class MergeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mergedBitmap = createHorizontalMergedImage(image1Path, image2Path);
+        mergedBitmap = Utils.createHorizontalMergedImage(image1Path, image2Path);
+        setHorizontalFlags();
         Glide.with(view)
                 .load(mergedBitmap)
                 .fitCenter()
                 .into((ImageView) view.findViewById(R.id.ivMerge));
     }
 
-    private Bitmap createHorizontalMergedImage(String path1, String path2) {
-        Bitmap image1 = BitmapFactory.decodeFile(path1);
-        Bitmap image2 = BitmapFactory.decodeFile(path2);
-
-        int width = image1.getWidth() + image2.getWidth();
-        int height = image1.getHeight() > image2.getHeight() ? image1.getHeight() : image2.getHeight();
-        Bitmap mergedImage = Bitmap.createBitmap(width, height, image1.getConfig());
-
-        Canvas canvas = new Canvas(mergedImage);
-        canvas.drawBitmap(image1, 0, 0, null);
-        canvas.drawBitmap(image2, image1.getWidth(), 0, null);
-
+    private void setHorizontalFlags() {
         horizontal = true;
         vertical = false;
-
-        return mergedImage;
     }
 
-    private Bitmap createVerticalMergedImage(String path1, String path2) {
-        Bitmap image1 = BitmapFactory.decodeFile(path1);
-        Bitmap image2 = BitmapFactory.decodeFile(path2);
-
-        int width = image1.getWidth() > image2.getWidth() ? image1.getWidth() : image2.getWidth();
-        int height = image1.getHeight() + image2.getHeight();
-        Bitmap mergedImage = Bitmap.createBitmap(width, height, image1.getConfig());
-
-        Canvas canvas = new Canvas(mergedImage);
-        canvas.drawBitmap(image1, 0, 0, null);
-        canvas.drawBitmap(image2, 0, image1.getHeight(), null);
-
+    private void setVerticalFlags() {
         vertical = true;
         horizontal = false;
-
-        return mergedImage;
     }
 
     @Override
