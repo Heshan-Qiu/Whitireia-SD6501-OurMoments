@@ -1,8 +1,11 @@
 package ac.whitireia.ourmoments;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import ac.whitireia.ourmoments.ui.login.LoginFragment;
+import ac.whitireia.ourmoments.ui.main.MainFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,16 +62,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // user is now signed out
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, LoginFragment.newInstance())
-                                .commit();
-                    }
-                });
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(getString(R.string.logout_title));
+        alert.setMessage(getString(R.string.logout_message));
+        alert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                AuthUI.getInstance()
+                        .signOut(MainActivity.this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            public void onComplete(@NonNull Task<Void> task) {
+                                // user is now signed out
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.container, LoginFragment.newInstance())
+                                        .commit();
+                            }
+                        });
+            }
+        });
+        alert.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
     }
 
     public void showBackArrow() {

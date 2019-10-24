@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -98,8 +99,9 @@ public class LoginFragment extends Fragment {
     }
 
     private void startMainFragment() {
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commit();
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        MainFragment fragment = new MainFragment();
+        transaction.add(fragment, MainFragment.class.getName());
+        transaction.replace(R.id.container, fragment).commit();
     }
 }

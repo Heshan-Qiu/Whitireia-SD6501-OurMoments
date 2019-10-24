@@ -28,17 +28,18 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.IdpResponse;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
 import ac.whitireia.ourmoments.R;
+import ac.whitireia.ourmoments.Utils;
 import ac.whitireia.ourmoments.ui.image.ImageFragment;
 import ac.whitireia.ourmoments.ui.merge.MergeFragment;
 
@@ -57,6 +58,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     private boolean image1Setted;
     private boolean image2Setted;
     private boolean mergeEnable;
+    private boolean mergeComplete;
 
     private String image1Path;
     private String image2Path;
@@ -73,6 +75,14 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         image1Path = getPathForResource(R.drawable.sample1);
         image2Path = getPathForResource(R.drawable.sample2);
         mergePath = getPathForResource(R.drawable.sample3);
+    }
+
+    public void setMergeComplete(boolean mergeComplete) {
+        this.mergeComplete = mergeComplete;
+    }
+    
+    public void setMergePath(String mergePath) {
+        this.mergePath = mergePath;
     }
 
     @Nullable
@@ -175,6 +185,21 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
         initializeButtonChoose(view);
         initializeButtonMerge(view);
+        initializeButtonShare(view);
+    }
+
+    private void initializeButtonShare(View view) {
+        Button buttonShare = view.findViewById(R.id.buttonShare);
+        buttonShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(getContext(), "ac.whitireia.ourmoments.fileprovider", new File(mergePath)));
+                intent.setType("image/jpeg");
+                startActivity(Intent.createChooser(intent, getResources().getText(R.string.send_to)));
+            }
+        });
     }
 
     private void initializeButtonChoose(View view) {
@@ -214,6 +239,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         buttonMerge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mergeComplete = false;
                 requireActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, MergeFragment.newInstance(image1Path, image2Path))
                         .addToBackStack(MainFragment.class.getName())
@@ -233,7 +259,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     private void startCameraActivity() {
         try {
-            cameraFile = createImageFile();
+            cameraFile = Utils.createImageFile(requireContext());
         } catch (IOException e) {
             Log.e(LOG_TAG, "Can't create image file.", e);
             return;
@@ -243,13 +269,6 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 "ac.whitireia.ourmoments.fileprovider", cameraFile);
         startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, photoURI),
                 RC_CAMERA);
-    }
-
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date());
-        String pictureFile = "ourmoments_" + timeStamp + "_";
-        File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        return File.createTempFile(pictureFile, ".jpg", storageDir);
     }
 
     @Override
@@ -265,29 +284,13 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "Choose image successfully.", Toast.LENGTH_SHORT).show();
                 Uri uri = data.getData();
                 try {
-                    handleImageResult(getUriPath(uri));
+                    handleImageResult(Utils.getUriPath(uri, requireContext()));
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "Handle image error.", e);
                 }
             }
         } else if (response != null)
             Log.e(LOG_TAG, "Capture image error", response.getError());
-    }
-
-    private String getUriPath(Uri uri) throws IOException {
-        InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
-        File file = createImageFile();
-        OutputStream outputStream = new FileOutputStream(file);
-        byte[] buffer = new byte[1024];
-        int length;
-
-        while ((length = inputStream.read(buffer)) > 0)
-            outputStream.write(buffer, 0, length);
-
-        outputStream.close();
-        inputStream.close();
-
-        return file.getAbsolutePath();
     }
 
     private void handleImageResult(String path) {
@@ -311,5 +314,25 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         }
         if (imageView != null)
             Glide.with(getView()).load(path).override(imageWidth, imageHeight).fitCenter().into(imageView);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        View view = getView();
+        Button buttonShare = view.findViewById(R.id.buttonShare);
+
+        if (mergeComplete) {
+            buttonShare.setEnabled(true);
+
+            ImageView imageView3 = view.findViewById(R.id.imageView3);
+            if (mergePath == null)
+                Glide.with(view).load(R.drawable.sample3).override(imageWidth, imageHeight).fitCenter().into(imageView3);
+            else
+                Glide.with(view).load(mergePath).override(imageWidth, imageHeight).fitCenter().into(imageView3);
+        } else {
+            buttonShare.setEnabled(false);
+        }
     }
 }

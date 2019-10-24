@@ -12,7 +12,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,10 +25,18 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import ac.whitireia.ourmoments.MainActivity;
 import ac.whitireia.ourmoments.R;
+import ac.whitireia.ourmoments.Utils;
+import ac.whitireia.ourmoments.ui.main.MainFragment;
 
 public class MergeFragment extends Fragment {
+
+    private static final String LOG_TAG = MergeFragment.class.getName();
 
     private static final String IMAGE1 = "image1";
     private static final String IMAGE2 = "image2";
@@ -88,12 +98,34 @@ public class MergeFragment extends Fragment {
                 handleMenuSwap();
                 break;
             case R.id.menu_save:
+                handleMenuSave();
                 break;
             default:
                 break;
         }
 
         return false;
+    }
+
+    private void handleMenuSave() {
+        FragmentManager manager = requireActivity().getSupportFragmentManager();
+        MainFragment fragment = (MainFragment) manager.findFragmentByTag(MainFragment.class.getName());
+        fragment.setMergeComplete(true);
+        try {
+            fragment.setMergePath(convertBitmapToFile(mergedBitmap).getAbsolutePath());
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Convert bitmap to jpeg file error: ", e);
+        }
+        manager.popBackStack();
+    }
+
+    private File convertBitmapToFile(@NonNull Bitmap bitmap) throws IOException {
+        File file = Utils.createImageFile(requireContext());
+        FileOutputStream outputStream = new FileOutputStream(file);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        outputStream.flush();
+        outputStream.close();
+        return file;
     }
 
     private void handleMenuSwap() {

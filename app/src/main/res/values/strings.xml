@@ -23,4 +23,9 @@
     <string name="transform">Transform</string>
     <string name="swap">Swap</string>
     <string name="save">Save</string>
+    <string name="send_to">Send to</string>
+    <string name="logout_title">Logout Confirm</string>
+    <string name="logout_message">Are you sure to logout?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 </resources>
